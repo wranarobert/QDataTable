@@ -5,7 +5,15 @@ const routes: RouteConfig[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { path: '', redirect: 'documentation' },
+      {
+        path: 'documentation',
+        component: () => import('pages/DocumentationPage.vue')
+      },
+      {
+        path: 'q-data-table-demo',
+        component: () => import('pages/QDataTableDemo.vue')
+      }
     ]
   },
 
