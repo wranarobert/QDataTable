@@ -11,6 +11,6 @@ export function createRowInputComponent(type: InputType): any {
     case InputType.Input:
       return DtInput;
     default:
-      throw new Error('Unknown element type.');
+      return null; //throw new Error('Unknown element type.');
   }
 }

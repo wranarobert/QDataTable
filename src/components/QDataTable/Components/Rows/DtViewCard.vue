@@ -59,7 +59,8 @@ export default class DtViewCard extends Vue {
 
   dataColumns(tableProps: Record<string, any>) {
     return tableProps.cols.filter(
-      (column: Record<string, any>) => column.name !== 'actions'
+      (column: Record<string, any>) =>
+        column.name !== 'actions' && column.name !== 'expand'
     );
   }
 }

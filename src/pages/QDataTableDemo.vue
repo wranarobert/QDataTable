@@ -1,11 +1,15 @@
 <template>
   <q-page>
+    <div class="q-pa-md">
+      For smaller screens rows are turned to cards and adding/editing is
+      implemented with dialogs.
+    </div>
     <q-data-table
       ref="table"
       title="Treats"
       :data="data"
       :columns="columns"
-      :grid="$q.screen.lt.md"
+      :grid="$q.screen.lt.lg"
       selection="multiple"
       :selected.sync="selected"
       @submitNew="submitAdd"

@@ -2,6 +2,7 @@
   <div>
     <q-table
       :row-key="rowKey"
+      :columns="columns"
       :grid="grid"
       :selected="selected"
       v-bind="$attrs"
@@ -74,14 +75,33 @@
             <slot :name="name" v-bind="data"></slot>
           </template>
         </dt-view-card>
+
+        <dt-form-dialog
+          :value="isEditFormRow(props.row)"
+          :formData="getEditFormData(props.row)"
+          :tableProps="props"
+          @submit="submitEditRow"
+          @update:formData="updateEditFormRow"
+          @watch:formData="watchEditFormData"
+          @cancel="closeEditFormRow"
+        />
       </template>
 
       <template v-for="(_, name) in qTableSlots" v-slot:[name]="data">
         <slot :name="name" v-bind="data"></slot>
       </template>
     </q-table>
-
-    <dt-form-dialog :value="false" />
+    <dt-form-dialog
+      :value="grid && isAddFormRow"
+      :formData="getNewFormData()"
+      :tableProps="{
+        cols: columns
+      }"
+      @update:formData="updateNewFormRow"
+      @watch:formData="watchNewFormData"
+      @submit="submitNewRow"
+      @cancel="closeNewFormRow"
+    />
   </div>
 </template>
 
@@ -118,6 +138,7 @@ export default class QDataTable extends Mixins(
   @Prop({ default: 'id' }) rowKey!:
     | string
     | ((row: Record<string, any>) => any);
+  @Prop({ required: true }) columns!: any[];
   @Prop() grid: boolean | undefined;
   @Prop() selected: any[] | undefined;
 
