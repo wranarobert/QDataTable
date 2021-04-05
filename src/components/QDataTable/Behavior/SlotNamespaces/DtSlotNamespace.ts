@@ -7,6 +7,10 @@ export class DtSlotNamespace {
     this.slotNamespace = slotNamespace;
   }
 
+  slot() {
+    return this.slotNamespace;
+  }
+
   slotName(slotName: string) {
     return `${this.slotNamespace}-${slotName}`;
   }
@@ -22,6 +26,10 @@ export class DtSlotNamespace {
 
 export const ViewRowSlotNamespace = new DtSlotNamespace(
   SlotNamespaceType.ViewRow
+);
+
+export const ViewCardSlotNamespace = new DtSlotNamespace(
+  SlotNamespaceType.ViewCard
 );
 
 export const FormRowSlotNamespace = new DtSlotNamespace(

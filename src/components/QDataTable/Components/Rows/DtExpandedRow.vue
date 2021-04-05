@@ -1,5 +1,5 @@
 <template>
-  <q-tr :props="tableProps">
+  <q-tr v-show="tableProps.expand" :props="tableProps">
     <q-td colspan="100%">
       <slot :name="ExpandedRowNamespace.slotName('body')" v-bind="tableProps" />
     </q-td>

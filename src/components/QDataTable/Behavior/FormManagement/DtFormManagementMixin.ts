@@ -50,8 +50,6 @@ export class DtFormManagementMixin extends Vue {
   openEditFormRow(formData: Record<string, any>) {
     const rowKeyValue = this.rowKeyValue(formData);
 
-    console.log('rowKeyValue', rowKeyValue);
-
     this._createFormRow(rowKeyValue, formData);
   }
 

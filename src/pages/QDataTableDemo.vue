@@ -8,10 +8,15 @@
       :grid="$q.screen.lt.md"
       selection="multiple"
       :selected.sync="selected"
+      @submitNew="submitAdd"
       @submitEdit="submitEdit"
+      @deleteRow="deleteRow"
     >
       <template v-slot:top-right>
         <q-btn color="primary" label="Add row" @click="openAddForm" />
+      </template>
+      <template v-slot:expanded-row-body>
+        Test expanded row
       </template>
     </q-data-table>
   </q-page>
@@ -19,6 +24,9 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+
+import { uid } from 'quasar';
+
 import QDataTable from 'src/components/QDataTable/QDataTable.vue';
 
 @Component({ components: { QDataTable } })
@@ -26,15 +34,21 @@ export default class QDataTableDemo extends Vue {
   selected = [];
   columns = [
     {
+      name: 'expand',
+      align: 'center'
+    },
+    {
       name: 'name',
       required: true,
       label: 'Dessert (100g serving)',
       align: 'left',
       field: 'name',
-      format: (val: string) => `dfdaf ${val}`,
       sortable: true,
       form: {
-        type: 'input'
+        type: 'input',
+        attributes: {
+          placeholder: 'Enter a treat name'
+        }
       }
     },
     {
@@ -42,7 +56,14 @@ export default class QDataTableDemo extends Vue {
       align: 'center',
       label: 'Calories',
       field: 'calories',
-      sortable: true
+      sortable: true,
+      form: {
+        type: 'input',
+        attributes: {
+          type: 'number',
+          min: 0
+        }
+      }
     },
     { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
     { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
@@ -90,26 +111,51 @@ export default class QDataTableDemo extends Vue {
     }
   ];
 
+  get tableRef() {
+    return <QDataTable>this.$refs.table;
+  }
+
   openAddForm() {
-    (<QDataTable>this.$refs.table).openNewFormRow({
-      name: 'Init add treat',
-      calories: 237,
-      fat: 9.0,
-      carbs: 37,
-      protein: 4.3,
-      sodium: 129,
-      calcium: '8%',
-      iron: '1%'
+    this.tableRef.openNewFormRow({
+      name: '',
+      calories: 0,
+      fat: 0,
+      carbs: 0,
+      protein: 0,
+      sodium: 0,
+      calcium: 0,
+      iron: 0
     });
   }
 
-  submitEdit(formData: any) {
-    console.log(formData);
+  submitAdd(formData: any) {
+    this.data.push({ id: uid(), ...formData });
+
+    this.tableRef.closeNewFormRow();
   }
 
-  test(props: any): string {
-    console.log(props);
-    return '';
+  submitEdit(formData: any) {
+    const dataIndex = this.data.findIndex(data => data.id === formData.id);
+
+    this.data.splice(dataIndex, 1, formData);
+
+    this.tableRef.closeEditFormRow(formData);
+  }
+
+  deleteRow(formData: any) {
+    this.$q
+      .dialog({
+        title: 'Confirm delete',
+        message: 'Would you like to delete this record?',
+        color: 'red',
+        cancel: true,
+        persistent: true
+      })
+      .onOk(() => {
+        const dataIndex = this.data.findIndex(data => data.id === formData.id);
+
+        this.data.splice(dataIndex, 1);
+      });
   }
 }
 </script>

@@ -8,6 +8,15 @@
       :key="column.name"
       :props="tableProps"
     >
+      <template v-if="column.name === 'expand'">
+        <q-btn
+          size="sm"
+          round
+          :dense="tableProps.dense"
+          @click="tableProps.expand = !tableProps.expand"
+          :icon="tableProps.expand ? 'remove' : 'add'"
+        />
+      </template>
       <template v-if="column.name === 'actions'">
         <slot
           :name="ViewRowNamespace.slotNamePrepend(column.name)"

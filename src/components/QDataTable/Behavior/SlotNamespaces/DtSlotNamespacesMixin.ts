@@ -9,30 +9,49 @@ export class DtSlotNamespacesMixin extends Vue {
       slotName.startsWith(SlotNamespaceType.ViewRow)
     );
   }
+
   get formRowSlotNames() {
     return Object.keys(this.$scopedSlots).filter(slotName =>
       slotName.startsWith(SlotNamespaceType.FormRow)
     );
   }
+
+  get expandedRowSlotNames() {
+    return Object.keys(this.$scopedSlots).filter(slotName =>
+      slotName.startsWith(SlotNamespaceType.ExpandedRow)
+    );
+  }
+
   get qTableSlotNames() {
     return Object.keys(this.$scopedSlots).filter(
       slotName =>
         !this.viewRowSlotNames.includes(slotName) &&
-        !this.formRowSlotNames.includes(slotName)
+        !this.formRowSlotNames.includes(slotName) &&
+        !this.expandedRowSlotNames.includes(slotName)
     );
   }
+
   get viewRowSlots() {
     return this.viewRowSlotNames.reduce((slotObject, slotName) => {
       slotObject[slotName] = this.$scopedSlots[slotName];
       return slotObject;
     }, <Record<string, unknown>>{});
   }
+
   get formRowSlots() {
     return this.formRowSlotNames.reduce((slotObject, slotName) => {
       slotObject[slotName] = this.$scopedSlots[slotName];
       return slotObject;
     }, <Record<string, unknown>>{});
   }
+
+  get expandedRowSlots() {
+    return this.expandedRowSlotNames.reduce((slotObject, slotName) => {
+      slotObject[slotName] = this.$scopedSlots[slotName];
+      return slotObject;
+    }, <Record<string, unknown>>{});
+  }
+
   get qTableSlots() {
     return this.qTableSlotNames.reduce((slotObject, slotName) => {
       slotObject[slotName] = this.$scopedSlots[slotName];

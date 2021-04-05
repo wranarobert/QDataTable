@@ -2,6 +2,7 @@
   <div>
     <q-table
       :row-key="rowKey"
+      :grid="grid"
       :selected="selected"
       v-bind="$attrs"
       v-on="$listeners"
@@ -53,41 +54,26 @@
             <slot :name="name" v-bind="data"></slot>
           </template>
         </dt-view-row>
+
+        <!-- Expanded row -->
+        <dt-expanded-row :tableProps="props">
+          <template v-for="(_, name) in expandedRowSlots" v-slot:[name]="data">
+            <slot :name="name" v-bind="data"></slot>
+          </template>
+        </dt-expanded-row>
       </template>
 
-      <!-- View card TODO -->
       <template v-slot:item="props">
-        <div
-          class="col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-          :style="props.selected ? 'transform: scale(0.95);' : ''"
+        <dt-view-card
+          :selectable="selectable"
+          :tableProps="props"
+          @openForm="openEditFormRow"
+          @deleteRow="deleteRow"
         >
-          <q-card :class="props.selected ? 'bg-grey-2' : ''">
-            <q-card-actions class="q-px-md">
-              <q-checkbox v-if="selectable" dense v-model="props.selected" />
-              <q-space />
-              <q-btn round size="sm" icon="edit" dense />
-              <q-btn round size="sm" color="negative" icon="delete" dense />
-            </q-card-actions>
-            <q-separator />
-            <q-card-section class="q-pa-xs">
-              <q-list dense>
-                <q-item
-                  v-for="col in props.cols.filter(
-                    ({ name }) => name !== 'actions'
-                  )"
-                  :key="col.name"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ col.label }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-item-label caption>{{ col.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </div>
+          <template v-for="(_, name) in viewRowSlots" v-slot:[name]="data">
+            <slot :name="name" v-bind="data"></slot>
+          </template>
+        </dt-view-card>
       </template>
 
       <template v-for="(_, name) in qTableSlots" v-slot:[name]="data">
@@ -95,24 +81,7 @@
       </template>
     </q-table>
 
-    <!--
-    <q-dialog :value="isAddFormRow" persistent>
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Your address</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input dense autofocus />
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Add address" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    -->
+    <dt-form-dialog :value="false" />
   </div>
 </template>
 
@@ -122,13 +91,24 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import { QTable } from 'quasar';
 
 import DtViewRow from './Components/Rows/DtViewRow.vue';
+import DtViewCard from './Components/Rows/DtViewCard.vue';
 import DtFormRow from './Components/Rows/DtFormRow.vue';
+import DtExpandedRow from './Components/Rows/DtExpandedRow.vue';
+
+import DtFormDialog from './Components/Dialogs/DtFormDialog.vue';
 
 import { DtSlotNamespacesMixin } from './Behavior/SlotNamespaces/DtSlotNamespacesMixin';
 import { DtFormManagementMixin } from './Behavior/FormManagement/DtFormManagementMixin';
 
 @Component({
-  components: { QTable, DtViewRow, DtFormRow },
+  components: {
+    QTable,
+    DtViewRow,
+    DtViewCard,
+    DtFormRow,
+    DtFormDialog,
+    DtExpandedRow
+  },
   inheritAttrs: false
 })
 export default class QDataTable extends Mixins(
@@ -138,7 +118,7 @@ export default class QDataTable extends Mixins(
   @Prop({ default: 'id' }) rowKey!:
     | string
     | ((row: Record<string, any>) => any);
-
+  @Prop() grid: boolean | undefined;
   @Prop() selected: any[] | undefined;
 
   get selectable() {
